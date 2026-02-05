@@ -1,0 +1,8 @@
+name = "hexa-admin-api"
+main = "workers/index.js"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "tbs"
+database_id = "bc935e09-67ab-4944-8bad-92c6498b5a1a"

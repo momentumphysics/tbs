@@ -1,6 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { DataContext } from '../App';
 
 export default function Hero() {
+    const { data } = useContext(DataContext);
+    const hero = data?.hero || {};
+
     const handleScroll = (e, targetId) => {
         e.preventDefault();
         const element = document.querySelector(targetId);
@@ -17,7 +21,7 @@ export default function Hero() {
             <div className="absolute inset-0">
                 <img
                     className="w-full h-full object-cover"
-                    src="/img/Edelweiss/1-Edelweiss depan.avif"
+                    src={hero.image || "/img/Edelweiss/1-Edelweiss depan.avif"} // Fallback logic
                     alt="Hexa Modern Living"
                 />
                 <div className="absolute inset-0 bg-gray-900/60 mix-blend-multiply" aria-hidden="true"></div>
@@ -25,11 +29,10 @@ export default function Hero() {
 
             <div className="relative w-full h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center text-center sm:text-left">
                 <h1 className="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl max-w-3xl" data-aos="fade-up">
-                    <span className="block xl:inline">Hexa: Solusi Rumah</span>{' '}
-                    <span className="block text-accent xl:inline">Impian Anda</span>
+                    {hero.title || "Hexa: Solusi Rumah Impian Anda"}
                 </h1>
                 <p className="mt-4 sm:mt-6 text-base sm:text-xl text-gray-300 max-w-2xl" data-aos="fade-up" data-aos-delay="200">
-                    Rumah luas, cicilan fleksibel, DP ringan! Unit terbatas. Temukan kenyamanan hidup di lingkungan terbaik.
+                    {hero.subtitle || "Rumah luas, cicilan fleksibel, DP ringan! Unit terbatas. Temukan kenyamanan hidup di lingkungan terbaik."}
                 </p>
                 <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row sm:justify-start gap-4 sm:gap-3" data-aos="fade-up" data-aos-delay="400">
                     <div className="rounded-md shadow">

@@ -34,6 +34,7 @@ export default function ProductCard({ product }) {
 
         {/* Content */}
         <div className="p-6">
+          {product.estateName && <p className="text-sm text-accent font-semibold uppercase tracking-wide mb-1">{product.estateName}</p>}
           <h3 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h3>
 
           {/* Specs Grid */}

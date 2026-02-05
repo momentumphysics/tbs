@@ -56,7 +56,7 @@ export default function Navbar() {
                     <div className="hidden md:ml-6 md:flex md:items-center md:space-x-8">
                         <a href="#" onClick={(e) => handleScroll(e, '#')} className="text-gray-700 hover:text-blue-900 hover:underline hover:decoration-2 hover:underline-offset-4 px-3 py-2 font-medium transition-all duration-200">Beranda</a>
                         <a href="#katalog" onClick={(e) => handleScroll(e, '#katalog')} className="text-gray-700 hover:text-blue-900 hover:underline hover:decoration-2 hover:underline-offset-4 px-3 py-2 font-medium transition-all duration-200">Tipe Rumah</a>
-                        <a href="#simulasi" onClick={(e) => handleScroll(e, '#simulasi')} className="text-gray-700 hover:text-blue-900 hover:underline hover:decoration-2 hover:underline-offset-4 px-3 py-2 font-medium transition-all duration-200">Simulasi KPR</a>
+
                         <a href="#kontak" onClick={(e) => handleScroll(e, '#kontak')} className="bg-primary text-white px-5 py-2 rounded-full font-medium hover:bg-gray-800 transition-colors shadow-sm hover:shadow-md">Kontak</a>
                     </div>
 
@@ -81,7 +81,7 @@ export default function Navbar() {
                 <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                     <a href="#" onClick={(e) => handleScroll(e, '#')} className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-900 hover:bg-gray-50">Beranda</a>
                     <a href="#katalog" onClick={(e) => handleScroll(e, '#katalog')} className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-900 hover:bg-gray-50">Tipe Rumah</a>
-                    <a href="#simulasi" onClick={(e) => handleScroll(e, '#simulasi')} className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-blue-900 hover:bg-gray-50">Simulasi KPR</a>
+
                     <a href="#kontak" onClick={(e) => handleScroll(e, '#kontak')} className="block px-3 py-2 text-base font-medium text-white bg-primary rounded-md">Kontak</a>
                 </div>
             </div>
