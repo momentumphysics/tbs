@@ -52,6 +52,7 @@ export default {
 
         // 1. Public Data (Hero, Footer, Catalog)
         if (path === '/api/content' && method === 'GET') {
+            const baseUrl = `${url.protocol}//${url.host}`;
             const settings = await env.DB.prepare('SELECT hero_title, hero_subtitle, footer_description, web_title, logo_id FROM admin_settings WHERE id = 1').first();
             const contacts = await env.DB.prepare('SELECT * FROM contacts').all();
             const estates = await env.DB.prepare('SELECT * FROM housing_estates').all();
@@ -68,14 +69,14 @@ export default {
                 try { house.features = JSON.parse(house.features); } catch (e) { }
                 // Images: detailed query or just IDs
                 const imgs = await env.DB.prepare('SELECT id FROM images WHERE house_type_id = ?').bind(house.id).all();
-                house.images = imgs.results.map(i => `/api/image/${i.id}`);
+                house.images = imgs.results.map(i => `${baseUrl}/api/image/${i.id}`);
             }
 
             const heroImg = await env.DB.prepare("SELECT id FROM images WHERE type = 'hero' ORDER BY id DESC LIMIT 1").first();
-            const heroImageUrl = heroImg ? `/api/image/${heroImg.id}` : null;
+            const heroImageUrl = heroImg ? `${baseUrl}/api/image/${heroImg.id}` : null;
 
             // Site specific
-            const logoUrl = settings.logo_id ? `/api/image/${settings.logo_id}` : null;
+            const logoUrl = settings.logo_id ? `${baseUrl}/api/image/${settings.logo_id}` : null;
 
             return json({
                 site: { title: settings.web_title, logo: logoUrl },
