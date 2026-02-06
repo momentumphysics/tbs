@@ -42,12 +42,21 @@ export default function EstateManager() {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Hapus perumahan ini? Semua tipe rumah di dalamnya mungkin akan ikut terhapus.')) return;
+        if (!confirm('Hapus perumahan ini?')) return;
         try {
             const res = await apiFetch(`/estates/${id}`, { method: 'DELETE' });
-            if (res.ok) loadData();
+            if (res.ok) {
+                loadData();
+            } else {
+                const data = await res.json();
+                if (data.dependentHouses && data.dependentHouses.length > 0) {
+                    alert(`Gagal menghapus! Tipe rumah berikut harus dihapus terlebih dahulu:\n\n- ${data.dependentHouses.join('\n- ')}`);
+                } else {
+                    alert('Gagal menghapus perumahan.');
+                }
+            }
         } catch (e) {
-            alert('Gagal menghapus');
+            alert('Gagal menghapus perumahan. Terjadi kesalahan jaringan.');
         }
     };
 

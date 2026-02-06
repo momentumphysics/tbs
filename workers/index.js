@@ -180,6 +180,17 @@ export default {
         }
         if (path.startsWith('/api/estates/') && method === 'DELETE') {
             const id = path.split('/').pop();
+
+            // Check for dependent house types
+            const dependents = await env.DB.prepare('SELECT name FROM house_types WHERE housing_estate_id = ?').bind(id).all();
+
+            if (dependents.results && dependents.results.length > 0) {
+                return json({
+                    error: 'Gagal menghapus. Masih ada tipe rumah yang terhubung.',
+                    dependentHouses: dependents.results.map(d => d.name)
+                }, 400);
+            }
+
             await env.DB.prepare('DELETE FROM housing_estates WHERE id = ?').bind(id).run();
             return json({ success: true });
         }
