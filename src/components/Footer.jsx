@@ -4,6 +4,9 @@ import { DataContext } from '../App';
 export default function Footer() {
     const { data } = useContext(DataContext);
     const description = data?.footer?.description || "Menyediakan hunian berkualitas dengan desain modern dan lingkungan yang nyaman untuk keluarga Anda di Makassar dan Gowa.";
+    const title = data?.site?.title || "Hexa Property";
+    const logo = data?.site?.logo;
+
     const contacts = data?.footer?.contacts || [
         { id: 1, name: 'Rizqi', phone: '089669153464' },
         { id: 2, name: 'Achmad', phone: '085780574811' }
@@ -24,8 +27,9 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
                     {/* Brand Column */}
                     <div>
-                        <div className="flex items-center">
-                            <span className="ml-2 text-2xl font-bold text-gray-900">Hexa Property</span>
+                        <div className="flex items-center gap-3">
+                            {logo && <img src={logo} alt={title} className="h-10 w-auto object-contain" />}
+                            <span className="text-2xl font-bold text-gray-900">{title}</span>
                         </div>
                         <p className="mt-4 text-gray-500 leading-relaxed max-w-sm">
                             {description}
@@ -61,7 +65,7 @@ export default function Footer() {
 
                 <div className="mt-8 border-t border-gray-200 pt-8 text-center">
                     <p className="text-base text-gray-400">
-                        &copy; {new Date().getFullYear()} Hexa Property. All rights reserved.
+                        &copy; {new Date().getFullYear()} {title}. All rights reserved.
                     </p>
                 </div>
             </div>

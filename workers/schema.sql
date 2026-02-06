@@ -9,7 +9,9 @@ CREATE TABLE admin_settings (
   password TEXT NOT NULL, -- Plain text for simplicity as requested, but conceptually should be hashed. User asked for default admin/admin1234
   hero_title TEXT,
   hero_subtitle TEXT,
-  footer_description TEXT
+  footer_description TEXT,
+  web_title TEXT,
+  logo_id INTEGER
 );
 
 INSERT INTO admin_settings (id, username, password, hero_title, hero_subtitle, footer_description) 

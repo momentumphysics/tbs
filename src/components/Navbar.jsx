@@ -1,6 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { DataContext } from '../App';
 
 export default function Navbar() {
+    const { data } = useContext(DataContext);
+    const logo = data?.site?.logo || "/img/Logo header.avif";
+    const title = data?.site?.title || "Hexa Real Estate";
+
     const [isOpen, setIsOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const lastScrollY = useRef(0);
@@ -43,11 +48,11 @@ export default function Navbar() {
                 <div className="flex justify-between h-20">
                     <div className="flex-shrink-0 flex items-center">
                         {/* Logo */}
-                        <a href="#" onClick={(e) => handleScroll(e, '#')} className="cursor-pointer">
+                        <a href="#" onClick={(e) => handleScroll(e, '#')} className="cursor-pointer flex items-center gap-2">
                             <img
-                                className="h-12 w-auto"
-                                src="/img/Logo header.avif"
-                                alt="Hexa Real Estate"
+                                className="h-12 w-auto object-contain"
+                                src={logo}
+                                alt={title}
                             />
                         </a>
                     </div>

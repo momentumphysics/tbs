@@ -52,7 +52,7 @@ export default {
 
         // 1. Public Data (Hero, Footer, Catalog)
         if (path === '/api/content' && method === 'GET') {
-            const settings = await env.DB.prepare('SELECT hero_title, hero_subtitle, footer_description FROM admin_settings WHERE id = 1').first();
+            const settings = await env.DB.prepare('SELECT hero_title, hero_subtitle, footer_description, web_title, logo_id FROM admin_settings WHERE id = 1').first();
             const contacts = await env.DB.prepare('SELECT * FROM contacts').all();
             const estates = await env.DB.prepare('SELECT * FROM housing_estates').all();
 
@@ -71,8 +71,15 @@ export default {
                 house.images = imgs.results.map(i => `/api/image/${i.id}`);
             }
 
+            const heroImg = await env.DB.prepare("SELECT id FROM images WHERE type = 'hero' ORDER BY id DESC LIMIT 1").first();
+            const heroImageUrl = heroImg ? `/api/image/${heroImg.id}` : null;
+
+            // Site specific
+            const logoUrl = settings.logo_id ? `/api/image/${settings.logo_id}` : null;
+
             return json({
-                hero: { title: settings.hero_title, subtitle: settings.hero_subtitle },
+                site: { title: settings.web_title, logo: logoUrl },
+                hero: { title: settings.hero_title, subtitle: settings.hero_subtitle, image: heroImageUrl },
                 footer: { description: settings.footer_description, contacts: contacts.results },
                 catalog: { estates: estates.results, houses: houses }
             });
@@ -135,11 +142,20 @@ export default {
             return json({ success: true });
         }
 
-        // 5. Update Hero/Footer Text
+        // 5. Update Hero/Footer/Site Text
         if (path === '/api/settings' && method === 'PUT') {
-            const { hero_title, hero_subtitle, footer_description } = await request.json();
-            await env.DB.prepare('UPDATE admin_settings SET hero_title = ?, hero_subtitle = ?, footer_description = ? WHERE id = 1')
-                .bind(hero_title, hero_subtitle, footer_description).run();
+            const { hero_title, hero_subtitle, footer_description, web_title, logo_id } = await request.json();
+
+            // Construct dynamic update query or just update all
+            await env.DB.prepare(`UPDATE admin_settings SET 
+                hero_title = ?, 
+                hero_subtitle = ?, 
+                footer_description = ?,
+                web_title = ?,
+                logo_id = ?
+            WHERE id = 1`)
+                .bind(hero_title, hero_subtitle, footer_description, web_title, logo_id).run();
+
             return json({ success: true });
         }
 
