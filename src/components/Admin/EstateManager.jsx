@@ -56,7 +56,7 @@ export default function EstateManager() {
                 }
             }
         } catch (e) {
-            alert('Gagal menghapus perumahan. Terjadi kesalahan jaringan.');
+            alert('Gagal menghapus! Tipe rumah untuk perumahan ini harus dihapus terlebih dahulu.');
         }
     };
 
