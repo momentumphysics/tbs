@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-// .wrangler/tmp/bundle-zEBdz6/checked-fetch.js
+// .wrangler/tmp/bundle-H2dsUr/checked-fetch.js
 var urls = /* @__PURE__ */ new Set();
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
@@ -152,8 +152,8 @@ var workers_default = {
       return json({ success: true });
     }
     if (path === "/api/houses" && method === "POST") {
-      const { estate_id, name, price, specs, features, images } = await request.json();
-      const res = await env.DB.prepare("INSERT INTO house_types (housing_estate_id, name, price, specs, features) VALUES (?, ?, ?, ?, ?)").bind(estate_id, name, price, JSON.stringify(specs), JSON.stringify(features)).run();
+      const { estate_id, name, price, specs, features, images, video_link, is_sold } = await request.json();
+      const res = await env.DB.prepare("INSERT INTO house_types (housing_estate_id, name, price, specs, features, video_link, is_sold) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(estate_id, name, price, JSON.stringify(specs), JSON.stringify(features), video_link || "", is_sold ? 1 : 0).run();
       if (images && Array.isArray(images)) {
         for (const imgId of images) {
           await env.DB.prepare("UPDATE images SET house_type_id = ? WHERE id = ?").bind(res.meta.last_row_id, imgId).run();
@@ -163,8 +163,8 @@ var workers_default = {
     }
     if (path.startsWith("/api/houses/") && method === "PUT") {
       const id = path.split("/").pop();
-      const { estate_id, name, price, specs, features, images } = await request.json();
-      await env.DB.prepare("UPDATE house_types SET housing_estate_id=?, name=?, price=?, specs=?, features=? WHERE id=?").bind(estate_id, name, price, JSON.stringify(specs), JSON.stringify(features), id).run();
+      const { estate_id, name, price, specs, features, images, video_link, is_sold } = await request.json();
+      await env.DB.prepare("UPDATE house_types SET housing_estate_id=?, name=?, price=?, specs=?, features=?, video_link=?, is_sold=? WHERE id=?").bind(estate_id, name, price, JSON.stringify(specs), JSON.stringify(features), video_link || "", is_sold ? 1 : 0, id).run();
       if (images && Array.isArray(images)) {
         for (const imgId of images) {
           await env.DB.prepare("UPDATE images SET house_type_id = ? WHERE id = ?").bind(id, imgId).run();
@@ -215,7 +215,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
 
-// .wrangler/tmp/bundle-zEBdz6/middleware-insertion-facade.js
+// .wrangler/tmp/bundle-H2dsUr/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default
 ];
@@ -246,7 +246,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// .wrangler/tmp/bundle-zEBdz6/middleware-loader.entry.ts
+// .wrangler/tmp/bundle-H2dsUr/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;

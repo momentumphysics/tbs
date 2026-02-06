@@ -34,32 +34,33 @@ export default function ProductCard({ product }) {
 
         {/* Content */}
         <div className="p-6">
-          {product.estateName && <p className="text-sm text-accent font-semibold uppercase tracking-wide mb-1">{product.estateName}</p>}
-          <h3 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h3>
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="text-2xl font-bold text-gray-900">{product.name}</h3>
+            {product.isSold && (
+              <span className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded font-bold uppercase tracking-wider border border-red-200">
+                Sold
+              </span>
+            )}
+          </div>
 
           {/* Specs Grid */}
-          <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm text-gray-600 mb-6">
-            <div className="flex items-center col-span-2">
-              <span className="mr-2">📐</span>
-              <span>
-                LT {product.specs.luas_tanah || product.specs.luas || '-'} | LB {product.specs.luas_bangunan || '-'} m²
-              </span>
+          <div className="grid grid-cols-2 gap-y-1 gap-x-2 text-sm text-gray-600 mb-4">
+            <div className="flex items-center">
+              <span className="mr-2">📐</span> Luas Tanah {product.specs.luas_tanah || product.specs.luas || '-'}
             </div>
             <div className="flex items-center">
-              <span className="mr-2">🛏</span> {product.specs.bedrooms} Kamar Tidur
+              <span className="mr-2">🏠</span> Luas {product.specs.luas_bangunan || '-'} m²
+            </div>
+            <div className="flex items-center">
+              <span className="mr-2">🛏️</span> {product.specs.bedrooms} Kamar Tidur
             </div>
             <div className="flex items-center">
               <span className="mr-2">🚿</span> {product.specs.bathrooms} Kamar Mandi
             </div>
-            {product.specs.garage && (
-              <div className="flex items-center col-span-2">
-                <span className="mr-2">🚗</span> Garasi {product.specs.garage}
-              </div>
-            )}
           </div>
 
           {/* Features Chips */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-4">
             {product.features.map((feature, idx) => (
               <span key={idx} className="bg-gray-100 text-gray-600 px-2 py-1 rounded-md text-xs font-medium">
                 {feature}
@@ -68,10 +69,10 @@ export default function ProductCard({ product }) {
           </div>
 
           {/* Pricing Block */}
-          <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-100">
+          <div className="bg-gray-50 rounded-lg p-3 mb-4 border border-gray-100">
             {product.pricing ? (
               <>
-                <div className="flex justify-between items-baseline mb-2">
+                <div className="flex justify-between items-baseline mb-1">
                   <span className="text-sm text-gray-500">Harga</span>
                   <span className="text-lg font-bold text-primary">{product.pricing.price}</span>
                 </div>
@@ -81,7 +82,7 @@ export default function ProductCard({ product }) {
                     <span className="font-medium text-gray-700">{product.pricing.dp}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Angsuran (15th)</span>
+                    <span>Angsuran</span>
                     <span className="font-medium text-green-600">{product.pricing.installment15}</span>
                   </div>
                 </div>
@@ -89,6 +90,23 @@ export default function ProductCard({ product }) {
             ) : (
               <div className="text-center py-2">
                 <span className="text-accent font-bold text-sm">Hubungi Kami untuk Promo Spesial</span>
+              </div>
+            )}
+
+            {/* Video Link Button */}
+            {product.videoLink && product.videoLink !== '#' && (
+              <div className="mt-3 pt-3 border-t border-gray-200">
+                <a
+                  href={product.videoLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-center w-full px-4 py-2 bg-black text-white text-sm font-medium rounded hover:bg-gray-800 transition-colors gap-2"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+                  </svg>
+                  Tonton Video Unit
+                </a>
               </div>
             )}
           </div>

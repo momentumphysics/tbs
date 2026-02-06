@@ -23,11 +23,12 @@ export default function ProductCatalog() {
             image: h.images && h.images.length > 0 ? h.images[0] : '/img/placeholder.png', // Fallback
             hoverImage: h.images && h.images.length > 1 ? h.images[1] : (h.images?.[0] || '/img/placeholder.png'),
             images: h.images || [],
-            videoLink: h.video_link || '#',
+            videoLink: h.video_link || '',
+            isSold: h.is_sold === 1 || h.is_sold === true,
             specs: h.specs || { luas_tanah: '-', luas_bangunan: '-', bedrooms: '-', bathrooms: '-', garage: '-' },
             features: h.features || [],
             pricing: {
-                price: h.price || 'Hubungi Kami',
+                price: h.price ? fmt(parseInt(h.price.replace(/\D/g, ''))) : 'Hubungi Kami',
                 dp: dpVal ? fmt(dpVal) : 'N.A',
                 installment15: 'Hubungi Marketing',
             }

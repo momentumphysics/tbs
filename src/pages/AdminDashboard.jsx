@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { DataContext } from '../App';
 import DashboardHome from '../components/Admin/DashboardHome';
 import EstateManager from '../components/Admin/EstateManager';
 import HouseManager from '../components/Admin/HouseManager';
@@ -7,6 +8,9 @@ import ContactManager from '../components/Admin/ContactManager';
 import Settings from '../components/Admin/Settings';
 
 export default function AdminDashboard() {
+    const { data } = useContext(DataContext);
+    const siteTitle = data?.site?.title || "Hexa Admin";
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -35,7 +39,7 @@ export default function AdminDashboard() {
             {/* Sidebar */}
             <aside className="w-64 bg-white shadow-md hidden md:block">
                 <div className="p-6">
-                    <h1 className="text-2xl font-bold text-gray-800">Hexa Admin</h1>
+                    <h1 className="text-2xl font-bold text-gray-800">{siteTitle}</h1>
                 </div>
                 <nav className="mt-6">
                     {navItems.map((item) => (

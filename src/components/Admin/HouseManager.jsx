@@ -16,8 +16,10 @@ export default function HouseManager() {
         luas_bangunan: '',
         bedrooms: '',
         bathrooms: '',
-        garage: '',
+        bathrooms: '',
         features: '',
+        video_link: '',
+        is_sold: false,
         images: [] // Array of {id, preview}
     });
     const [uploading, setUploading] = useState(false);
@@ -44,8 +46,10 @@ export default function HouseManager() {
             luas_bangunan: '',
             bedrooms: '',
             bathrooms: '',
-            garage: '',
+            bathrooms: '',
             features: '',
+            video_link: '',
+            is_sold: false,
             images: []
         });
         setEditingId(null);
@@ -61,8 +65,10 @@ export default function HouseManager() {
             luas_bangunan: house.specs?.luas_bangunan || '',
             bedrooms: house.specs?.bedrooms || '',
             bathrooms: house.specs?.bathrooms || '',
-            garage: house.specs?.garage || '',
+            bathrooms: house.specs?.bathrooms || '',
             features: (house.features || []).join('\n'),
+            video_link: house.video_link || '',
+            is_sold: house.is_sold === 1 || house.is_sold === true,
             images: (house.images || []).map(url => ({ id: url.split('/').pop(), preview: url })) // Extract ID from URL for logic
         });
         setView('form');
@@ -142,9 +148,12 @@ export default function HouseManager() {
                 luas_bangunan: formData.luas_bangunan,
                 bedrooms: formData.bedrooms,
                 bathrooms: formData.bathrooms,
-                garage: formData.garage
+                bedrooms: formData.bedrooms,
+                bathrooms: formData.bathrooms
             },
             features: formData.features.split('\n').filter(x => x.trim()),
+            video_link: formData.video_link,
+            is_sold: formData.is_sold,
             images: formData.images.map(img => img.id)
         };
 
@@ -164,6 +173,33 @@ export default function HouseManager() {
             }
         } catch (e) {
             alert('Gagal menyimpan');
+        }
+    };
+
+    const handleToggleSold = async (house) => {
+        const newStatus = !(house.is_sold === 1 || house.is_sold === true);
+        const payload = {
+            estate_id: house.housing_estate_id,
+            name: house.name,
+            price: house.price,
+            specs: house.specs, // Assuming server returns object
+            features: house.features,
+            video_link: house.video_link || '',
+            is_sold: newStatus,
+            images: house.images ? house.images.map(url => url.split('/').pop()) : []
+        };
+
+        try {
+            const res = await apiFetch(`/houses/${house.id}`, {
+                method: 'PUT',
+                body: JSON.stringify(payload)
+            });
+            if (res.ok) {
+                loadData();
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Gagal update status");
         }
     };
 
@@ -199,7 +235,13 @@ export default function HouseManager() {
                                     {estates.find(e => e.id === house.housing_estate_id)?.name} - {house.price}
                                 </p>
                             </div>
-                            <div className="space-x-2">
+                            <div className="space-x-2 flex items-center">
+                                <button 
+                                    onClick={() => handleToggleSold(house)} 
+                                    className={`px-2 py-1 text-xs rounded border ${house.is_sold ? 'bg-red-100 text-red-700 border-red-200' : 'bg-green-100 text-green-700 border-green-200'}`}
+                                >
+                                    {house.is_sold ? 'Sold' : 'Available'}
+                                </button>
                                 <button onClick={() => handleEdit(house)} className="text-blue-600 text-sm">Edit</button>
                                 <button onClick={() => handleDelete(house.id)} className="text-red-600 text-sm">Hapus</button>
                             </div>
@@ -244,17 +286,17 @@ export default function HouseManager() {
                         <div>
                             <label className="block text-sm font-medium">LT</label>
                             <input
-                                type="number"
+                                type="text"
                                 className="w-full border p-2 rounded"
                                 value={formData.luas_tanah}
                                 onChange={e => setFormData({ ...formData, luas_tanah: e.target.value })}
-                                placeholder="Luas Tanah"
+                                placeholder="P x L (e.g. 6x15)"
                             />
                         </div>
                         <div>
                             <label className="block text-sm font-medium">LB</label>
                             <input
-                                type="number"
+                                type="text"
                                 className="w-full border p-2 rounded"
                                 value={formData.luas_bangunan}
                                 onChange={e => setFormData({ ...formData, luas_bangunan: e.target.value })}
@@ -281,9 +323,29 @@ export default function HouseManager() {
                         </div>
                     </div>
 
+
+
                     <div>
-                        <label className="block text-sm font-medium">Garasi</label>
-                        <input className="w-full border p-2 rounded" value={formData.garage} onChange={e => setFormData({ ...formData, garage: e.target.value })} />
+                        <label className="block text-sm font-medium">Link Video TikTok</label>
+                        <input 
+                            className="w-full border p-2 rounded" 
+                            value={formData.video_link} 
+                            onChange={e => setFormData({ ...formData, video_link: e.target.value })} 
+                            placeholder="https://www.tiktok.com/@..."
+                        />
+                    </div>
+                    
+                    <div className="flex items-center">
+                         <input 
+                            type="checkbox" 
+                            id="is_sold"
+                            checked={formData.is_sold} 
+                            onChange={e => setFormData({ ...formData, is_sold: e.target.checked })} 
+                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="is_sold" className="ml-2 block text-sm font-medium text-gray-900">
+                            Unit Terjual (Sold Out)
+                        </label>
                     </div>
 
                     {/* Images */}

@@ -44,6 +44,7 @@ CREATE TABLE house_types (
   -- Storing images directly in D1 text column (Base64) is possible but size limited. 
   -- Better: Create a separate table 'images' with BLOB content if using pure D1.
   video_link TEXT,
+  is_sold BOOLEAN DEFAULT 0,
   FOREIGN KEY(housing_estate_id) REFERENCES housing_estates(id)
 );
 

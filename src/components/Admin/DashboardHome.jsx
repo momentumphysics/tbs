@@ -1,13 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { apiFetch } from '../../utils/api';
+import { DataContext } from '../../App';
 
 export default function DashboardHome() {
+    const { refreshData } = useContext(DataContext);
     const [heroTitle, setHeroTitle] = useState('');
     const [heroSubtitle, setHeroSubtitle] = useState('');
     const [footerDesc, setFooterDesc] = useState('');
     const [webTitle, setWebTitle] = useState('');
     const [logoPreview, setLogoPreview] = useState(null);
     const [logoId, setLogoId] = useState(null);
+
+    // Hero Image State
+    const [heroImagePreview, setHeroImagePreview] = useState(null);
+    const [uploadingHeroImg, setUploadingHeroImg] = useState(false);
 
     const [loading, setLoading] = useState(false);
     const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -24,18 +30,12 @@ export default function DashboardHome() {
                 const data = await res.json();
                 setHeroTitle(data.hero.title);
                 setHeroSubtitle(data.hero.subtitle);
+                setHeroImagePreview(data.hero.image || null); // Load Hero Image
+
                 setFooterDesc(data.footer.description);
                 setWebTitle(data.site?.title || '');
                 setLogoPreview(data.site?.logo || null);
-                // We'd ideally need the ID too. But API currently returns cooked URL.
-                // We can extract ID or just rely on new uploads.
-                // For now, if we don't change the logo, we send null or keep existing?
-                // The PUT endpoint updates ALL fields. So we should start with a valid ID if possible.
-                // Alternatively, we ignore logo_id update if it is null in the request
-                // But let's assume if they don't upload a new one, we keep the old one on the backend?
-                // My backend query updates `logo_id = ?`. If I send null, it wipes it!
-                // So I need to fetch the ID. The public API `/content` doesn't expose ID explicitly, only URL `.../api/image/123`.
-                // I can extract ID from URL.
+
                 if (data.site?.logo) {
                     const parts = data.site.logo.split('/');
                     setLogoId(parts[parts.length - 1]);
@@ -43,6 +43,31 @@ export default function DashboardHome() {
             }
         } catch (e) {
             console.error("Failed to load settings");
+        }
+    };
+
+    const handleHeroImageUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploadingHeroImg(true);
+        try {
+            const { compressImage } = await import('../../utils/imageCompressor');
+            const compressedFile = await compressImage(file);
+
+            const formData = new FormData();
+            formData.append('image', compressedFile);
+            formData.append('type', 'hero');
+
+            const res = await apiFetch('/upload', { method: 'POST', body: formData });
+            if (res.ok) {
+                setHeroImagePreview(URL.createObjectURL(compressedFile));
+            }
+        } catch (error) {
+            console.error("Hero upload failed", error);
+            alert("Gagal mengupload gambar");
+        } finally {
+            setUploadingHeroImg(false);
         }
     };
 
@@ -91,6 +116,7 @@ export default function DashboardHome() {
             });
             if (res.ok) {
                 setMessage('Perubahan berhasil disimpan!');
+                if (refreshData) refreshData();
             } else {
                 setMessage('Gagal menyimpan perubahan.');
             }
@@ -159,6 +185,23 @@ export default function DashboardHome() {
                             rows={3}
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                         />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Gambar Background</label>
+                        <div className="mt-2 text-sm text-gray-500 mb-2">Gambar akan otomatis tampil sebagai background halaman depan.</div>
+                        <div className="flex items-center space-x-4">
+                            {heroImagePreview && (
+                                <img src={heroImagePreview} alt="Hero Preview" className="h-24 w-32 object-cover border rounded" />
+                            )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleHeroImageUpload}
+                                disabled={uploadingHeroImg}
+                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                            />
+                        </div>
+                        {uploadingHeroImg && <span className="text-xs text-blue-600">Uploading...</span>}
                     </div>
                 </div>
 
