@@ -18,12 +18,13 @@ export default function ProductCatalog() {
         return {
             id: h.id,
             name: h.name,
-            estateName: estate ? estate.name : '',
+            estateId: h.housing_estate_id,
+            estateName: estate ? estate.name : 'Lainnya',
             image: h.images && h.images.length > 0 ? h.images[0] : '/img/placeholder.png', // Fallback
             hoverImage: h.images && h.images.length > 1 ? h.images[1] : (h.images?.[0] || '/img/placeholder.png'),
             images: h.images || [],
             videoLink: h.video_link || '#',
-            specs: h.specs || { luas: '-', bedrooms: '-', bathrooms: '-', garage: '-' },
+            specs: h.specs || { luas_tanah: '-', luas_bangunan: '-', bedrooms: '-', bathrooms: '-', garage: '-' },
             features: h.features || [],
             pricing: {
                 price: h.price || 'Hubungi Kami',
@@ -48,12 +49,42 @@ export default function ProductCatalog() {
                 {products.length === 0 ? (
                     <div className="text-center text-gray-500 py-10">Data properti belum tersedia.</div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                        {products.map((product, index) => (
-                            <div key={product.id} data-aos="fade-up" data-aos-delay={index * 100}>
-                                <ProductCard product={product} />
+                    <div className="space-y-16">
+                        {estates.map(estate => {
+                            const estateProducts = products.filter(p => p.estateId === estate.id);
+                            if (estateProducts.length === 0) return null;
+
+                            return (
+                                <div key={estate.id} data-aos="fade-up">
+                                    <h3 className="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-indigo-600 pl-4">
+                                        {estate.name}
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                                        {estateProducts.map((product, index) => (
+                                            <div key={product.id} data-aos="fade-up" data-aos-delay={index * 100}>
+                                                <ProductCard product={product} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                        {/* Handle products with no estate or invalid estate */}
+                        {products.filter(p => !p.estateId || !estates.find(e => e.id === p.estateId)).length > 0 && (
+                            <div data-aos="fade-up">
+                                <h3 className="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-gray-600 pl-4">
+                                    Lainnya
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                                    {products.filter(p => !p.estateId || !estates.find(e => e.id === p.estateId)).map((product, index) => (
+                                        <div key={product.id} data-aos="fade-up" data-aos-delay={index * 100}>
+                                            <ProductCard product={product} />
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        ))}
+                        )}
                     </div>
                 )}
             </div>

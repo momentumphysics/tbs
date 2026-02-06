@@ -12,8 +12,8 @@ export default function HouseManager() {
         estate_id: '',
         name: '',
         price: '',
-        video_link: '',
-        luas: '',
+        luas_tanah: '',
+        luas_bangunan: '',
         bedrooms: '',
         bathrooms: '',
         garage: '',
@@ -40,8 +40,8 @@ export default function HouseManager() {
             estate_id: estates.length > 0 ? estates[0].id : '',
             name: '',
             price: '',
-            video_link: '',
-            luas: '',
+            luas_tanah: '',
+            luas_bangunan: '',
             bedrooms: '',
             bathrooms: '',
             garage: '',
@@ -57,8 +57,8 @@ export default function HouseManager() {
             estate_id: house.housing_estate_id,
             name: house.name,
             price: house.price,
-            video_link: house.video_link,
-            luas: house.specs?.luas || '',
+            luas_tanah: house.specs?.luas_tanah || '',
+            luas_bangunan: house.specs?.luas_bangunan || '',
             bedrooms: house.specs?.bedrooms || '',
             bathrooms: house.specs?.bathrooms || '',
             garage: house.specs?.garage || '',
@@ -137,9 +137,9 @@ export default function HouseManager() {
             estate_id: formData.estate_id,
             name: formData.name,
             price: formData.price,
-            video_link: formData.video_link,
             specs: {
-                luas: formData.luas,
+                luas_tanah: formData.luas_tanah,
+                luas_bangunan: formData.luas_bangunan,
                 bedrooms: formData.bedrooms,
                 bathrooms: formData.bathrooms,
                 garage: formData.garage
@@ -227,38 +227,63 @@ export default function HouseManager() {
                         </div>
                         <div>
                             <label className="block text-sm font-medium">Harga</label>
-                            <input className="w-full border p-2 rounded" value={formData.price} onChange={e => setFormData({ ...formData, price: e.target.value })} />
+                            <input
+                                className="w-full border p-2 rounded"
+                                value={formData.price ? parseInt(formData.price).toLocaleString('id-ID') : ''}
+                                onChange={e => {
+                                    const val = e.target.value.replace(/\D/g, ''); // Remove non-digits
+                                    setFormData({ ...formData, price: val });
+                                }}
+                                placeholder="Contoh: 900.000.000"
+                            />
                         </div>
                     </div>
 
                     {/* Specs */}
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-4 gap-4">
                         <div>
-                            <label className="block text-sm font-medium">Luas (LT/LB)</label>
-                            <input className="w-full border p-2 rounded" value={formData.luas} onChange={e => setFormData({ ...formData, luas: e.target.value })} />
+                            <label className="block text-sm font-medium">LT</label>
+                            <input
+                                type="number"
+                                className="w-full border p-2 rounded"
+                                value={formData.luas_tanah}
+                                onChange={e => setFormData({ ...formData, luas_tanah: e.target.value })}
+                                placeholder="Luas Tanah"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium">LB</label>
+                            <input
+                                type="number"
+                                className="w-full border p-2 rounded"
+                                value={formData.luas_bangunan}
+                                onChange={e => setFormData({ ...formData, luas_bangunan: e.target.value })}
+                                placeholder="Luas Bangunan"
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-medium">Kamar Tidur</label>
-                            <input className="w-full border p-2 rounded" value={formData.bedrooms} onChange={e => setFormData({ ...formData, bedrooms: e.target.value })} />
+                            <input
+                                type="number"
+                                className="w-full border p-2 rounded"
+                                value={formData.bedrooms}
+                                onChange={e => setFormData({ ...formData, bedrooms: e.target.value })}
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-medium">Kamar Mandi</label>
-                            <input className="w-full border p-2 rounded" value={formData.bathrooms} onChange={e => setFormData({ ...formData, bathrooms: e.target.value })} />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium">Garasi</label>
-                            <input className="w-full border p-2 rounded" value={formData.garage} onChange={e => setFormData({ ...formData, garage: e.target.value })} />
+                            <input
+                                type="number"
+                                className="w-full border p-2 rounded"
+                                value={formData.bathrooms}
+                                onChange={e => setFormData({ ...formData, bathrooms: e.target.value })}
+                            />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium">Fitur (Pisahkan dengan baris baru)</label>
-                        <textarea className="w-full border p-2 rounded" rows={4} value={formData.features} onChange={e => setFormData({ ...formData, features: e.target.value })} />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium">Link Video TikTok</label>
-                        <input className="w-full border p-2 rounded" value={formData.video_link} onChange={e => setFormData({ ...formData, video_link: e.target.value })} />
+                        <label className="block text-sm font-medium">Garasi</label>
+                        <input className="w-full border p-2 rounded" value={formData.garage} onChange={e => setFormData({ ...formData, garage: e.target.value })} />
                     </div>
 
                     {/* Images */}

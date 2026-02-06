@@ -169,9 +169,9 @@ export default {
 
         // 8. Manage Houses
         if (path === '/api/houses' && method === 'POST') {
-            const { estate_id, name, price, specs, features, video_link, images } = await request.json();
-            const res = await env.DB.prepare('INSERT INTO house_types (housing_estate_id, name, price, specs, features, video_link) VALUES (?, ?, ?, ?, ?, ?)')
-                .bind(estate_id, name, price, JSON.stringify(specs), JSON.stringify(features), video_link).run();
+            const { estate_id, name, price, specs, features, images } = await request.json();
+            const res = await env.DB.prepare('INSERT INTO house_types (housing_estate_id, name, price, specs, features) VALUES (?, ?, ?, ?, ?)')
+                .bind(estate_id, name, price, JSON.stringify(specs), JSON.stringify(features)).run();
 
             if (images && Array.isArray(images)) {
                 for (const imgId of images) {
@@ -182,9 +182,9 @@ export default {
         }
         if (path.startsWith('/api/houses/') && method === 'PUT') {
             const id = path.split('/').pop();
-            const { estate_id, name, price, specs, features, video_link, images } = await request.json();
-            await env.DB.prepare('UPDATE house_types SET housing_estate_id=?, name=?, price=?, specs=?, features=?, video_link=? WHERE id=?')
-                .bind(estate_id, name, price, JSON.stringify(specs), JSON.stringify(features), video_link, id).run();
+            const { estate_id, name, price, specs, features, images } = await request.json();
+            await env.DB.prepare('UPDATE house_types SET housing_estate_id=?, name=?, price=?, specs=?, features=? WHERE id=?')
+                .bind(estate_id, name, price, JSON.stringify(specs), JSON.stringify(features), id).run();
 
             if (images && Array.isArray(images)) {
                 for (const imgId of images) {
