@@ -18,11 +18,14 @@ export const compressImage = (file) => {
 
                 // D1 has a strict statement limit of 1MB. We aim for < 900KB to be safe.
                 const MAX_SIZE_BYTES = 900 * 1024;
-                // Started higher for better visual quality (Hero images)
-                let quality = 0.85;
-                const MAX_DIMENSION = 2048; // Increased from 1600 to support decent Hero clarity
 
-                // Initial resize logic
+                // User requested: "compress without reducing resolution, quality ~80%"
+                let quality = 0.8;
+
+                // We keep the original dimensions unless absolutely necessary to fit the 1MB limit
+                // Initial resize logic removed to respect "without reducing resolution"
+                /* 
+                const MAX_DIMENSION = 2048; 
                 if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
                     const ratio = width / height;
                     if (width > height) {
@@ -33,13 +36,13 @@ export const compressImage = (file) => {
                         width = Math.round(height * ratio);
                     }
                 }
+                */
 
                 const attemptCompression = (w, h, q) => {
                     const canvas = document.createElement('canvas');
                     canvas.width = w;
                     canvas.height = h;
                     const ctx = canvas.getContext('2d');
-                    // Better interpolation? Default is usually OK for downsampling on canvas
                     ctx.drawImage(img, 0, 0, w, h);
 
                     canvas.toBlob((blob) => {
@@ -47,23 +50,22 @@ export const compressImage = (file) => {
                             if (blob.size > MAX_SIZE_BYTES) {
                                 console.log(`Image too big (${(blob.size / 1024).toFixed(2)}KB). Optimization needed.`);
 
-                                // Strategy: Reduce quality first, preserve resolution as much as possible for Hero look
+                                // Strategy: Reduce quality significantly before ensuring resolution drop
+                                // Try to keep resolution as requested
                                 let newQuality = q;
                                 let newWidth = w;
                                 let newHeight = h;
 
-                                if (q > 0.5) {
-                                    // If quality is high, lower it significantly
-                                    newQuality = Math.max(0.5, q - 0.15);
-                                } else if (q > 0.3) {
-                                    // If quality is medium, lower it slightly and start shrinking image
-                                    newQuality = q - 0.1;
+                                if (q > 0.2) {
+                                    // Drop quality down to 0.2 before resizing
+                                    newQuality = q - 0.15;
+                                    if (newQuality < 0.2) newQuality = 0.2;
+                                } else {
+                                    // If quality is already very low, we MUST resize to fit the 1MB limit
+                                    // This is a safety fallback so the app doesn't crash on upload
+                                    newQuality = q; // Keep low quality
                                     newWidth = Math.round(w * 0.9);
                                     newHeight = Math.round(h * 0.9);
-                                } else {
-                                    // If quality is already low, must shrink image more aggressively
-                                    newWidth = Math.round(w * 0.8);
-                                    newHeight = Math.round(h * 0.8);
                                 }
 
                                 console.log(`Retrying at ${newWidth}x${newHeight}, Q=${newQuality.toFixed(2)}`);
