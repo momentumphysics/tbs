@@ -16,16 +16,15 @@ export const compressImage = (file) => {
                 let width = img.width;
                 let height = img.height;
 
-                // D1 has a strict statement limit of 1MB. We aim for < 900KB to be safe.
-                const MAX_SIZE_BYTES = 900 * 1024;
+                // Picflow Style: High Quality Web Optimization
+                // Limit: 1MB (D1 Constraint)
+                const MAX_SIZE_BYTES = 900 * 1024; // 900KB safety margin
 
-                // User requested: "compress without reducing resolution, quality ~80%"
-                let quality = 0.8;
+                // Picflow recommends 3840px (4K) for high-res web display
+                const MAX_DIMENSION = 3840;
+                let quality = 0.85; // Start with high quality
 
-                // We keep the original dimensions unless absolutely necessary to fit the 1MB limit
-                // Initial resize logic removed to respect "without reducing resolution"
-                /* 
-                const MAX_DIMENSION = 2048; 
+                // 1. Smart Initial Resize (Downscale to 4K if huge, keeps ratio)
                 if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
                     const ratio = width / height;
                     if (width > height) {
@@ -36,13 +35,15 @@ export const compressImage = (file) => {
                         width = Math.round(height * ratio);
                     }
                 }
-                */
 
                 const attemptCompression = (w, h, q) => {
                     const canvas = document.createElement('canvas');
                     canvas.width = w;
                     canvas.height = h;
                     const ctx = canvas.getContext('2d');
+                    // Use 'high' quality for image smoothing (Picflow standard)
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
                     ctx.drawImage(img, 0, 0, w, h);
 
                     canvas.toBlob((blob) => {
@@ -50,28 +51,29 @@ export const compressImage = (file) => {
                             if (blob.size > MAX_SIZE_BYTES) {
                                 console.log(`Image too big (${(blob.size / 1024).toFixed(2)}KB). Optimization needed.`);
 
-                                // Strategy: Reduce quality significantly before ensuring resolution drop
-                                // Try to keep resolution as requested
+                                // Smart Optimization Strategy:
+                                // 1. Reduce quality down to a reasonable "Good" level (0.6)
+                                // 2. If that fails, reduce resolution but BOOST quality back up
+                                // This technique favors "Crisp & Smaller" over "Blurry & Big"
+
                                 let newQuality = q;
                                 let newWidth = w;
                                 let newHeight = h;
 
-                                if (q > 0.2) {
-                                    // Drop quality down to 0.2 before resizing
-                                    newQuality = q - 0.15;
-                                    if (newQuality < 0.2) newQuality = 0.2;
+                                if (q > 0.6) {
+                                    // Step 1: Reduce quality
+                                    newQuality = q - 0.1;
                                 } else {
-                                    // If quality is already very low, we MUST resize to fit the 1MB limit
-                                    // This is a safety fallback so the app doesn't crash on upload
-                                    newQuality = q; // Keep low quality
-                                    newWidth = Math.round(w * 0.9);
-                                    newHeight = Math.round(h * 0.9);
+                                    // Step 2: Quality is at limit, Resize to maintain sharpness
+                                    newWidth = Math.round(w * 0.8); // 20% reduction
+                                    newHeight = Math.round(h * 0.8);
+                                    newQuality = 0.85; // Reset quality to High for the new size
                                 }
 
                                 console.log(`Retrying at ${newWidth}x${newHeight}, Q=${newQuality.toFixed(2)}`);
 
-                                if (newWidth < 300) { // Safety break
-                                    reject(new Error("Unable to compress image below limit without destroying quality."));
+                                if (newWidth < 300) {
+                                    reject(new Error("Unable to compress image below limit."));
                                 } else {
                                     attemptCompression(newWidth, newHeight, newQuality);
                                 }
